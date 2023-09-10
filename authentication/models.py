@@ -3,15 +3,15 @@ from django.db import models
 
 # Create your models here.
 class User(AbstractUser):
-    pass
-
-class UserFollows(models.Model):
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='following'
+    profile_photo = models.ImageField(verbose_name='photo de profil')
+    follows = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        verbose_name='suit'
     )
-    followed_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='followed_by'
+    followed_by = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        verbose_name='suivi par',
+        related_name='followers'
     )
-
-    class Meta:
-        unique_together = ('user', 'followed_user')

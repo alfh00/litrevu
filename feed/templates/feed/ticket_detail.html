@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Ticket Detail</h1>
+
+<div class="ticket">
+  <h2>{{ ticket.title }}</h2>
+
+  {% if ticket.image %}
+  <img src="{{ ticket.image.file.url }}" alt="{{ ticket.title }}" class="ticket-image" />
+  {% endif %}
+
+  <p>{{ ticket.description }}</p>
+  <p>Created by: {{ ticket.user.username }}</p>
+  <p>Created at: {{ ticket.time_created }}</p>
+
+  {% if ticket.user == user %}
+
+  <div class="buttons">
+    <a href="{% url 'edit_ticket' ticket_id=ticket.id %}" class="btn btn-primary">Edit</a>
+  </div>
+  <button class="btn btn-danger">
+    <a href="{% url 'delete_ticket' ticket_id=ticket.id %}">delete</a>
+  </button>
+
+  <a href="{% url 'all_tickets' %}" class="btn btn-secondary">Back to All Tickets</a>
+
+  {% else %}
+  <a href="{% url 'discover' %}" class="btn btn-secondary">Back to Discover</a>
+  {% endif %}
+</div>
+
+{% endblock %}

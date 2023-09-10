@@ -1,4 +1,17 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+{% block content %}
 <h1>Feed/Home</h1>
+
+
+
+{% for ticket in page_obj%}
+<div>
+ <p>{{ticket.user}}</p>
+</div>
+<h2>{{ticket.title}}</h2>
+<img src="{{ ticket.image.file }}" alt="{{ ticket.image.caption }}" />
+<p>{{ ticket.description }}</p>
+
+{% endfor %}
 
 {% endblock content %}

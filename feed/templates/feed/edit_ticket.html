@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block content %}
+<h1>Edit Ticket</h1>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %} {{ticket_form.as_p}} {{image_form.as_p}}
+
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+<a
+  href="{% url 'ticket_detail' ticket_id=ticket.id %}"
+  class="btn btn-secondary"
+  >Cancel</a
+>
+{% endblock %}

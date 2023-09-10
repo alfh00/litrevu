@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{{ page_obj }}
+{% for ticket in page_obj.object_list %}
+<div>
+ <p>{{ticket.user}}</p>
+</div>
+<a href="{% url 'ticket_detail' ticket_id=ticket.id %}">
+ <h2>{{ticket.title}}</h2>
+</a>
+<img src="{{ ticket.image.file.url }}" alt="{{ ticket.image.caption }}" />
+<p>{{ ticket.description }}</p>
+
+{% endfor %}
+
+{% endblock content %}

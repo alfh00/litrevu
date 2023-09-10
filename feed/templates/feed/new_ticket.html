@@ -1,0 +1,8 @@
+{% extends 'base.html' %} {% block content %}
+<h1>Create New Ticket with Review and Photo</h1>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %} {% for form in forms %} {{ form.as_p }} {% endfor %}
+  <button type="submit">Create Ticket</button>
+</form>
+{% endblock %}
