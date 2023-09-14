@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Following List</h1>
+
+<ul>
+ {% for user in following_users %}
+ <div class="d-flex justify-content-between">
+  <li>{{ user.username }}</li>
+  <a href="{% url 'unfollow_user' user_id=user.id %}"><button class="btn btn-info btn-sm">unfollow</button></a>
+ </div>
+ {% empty %}
+ <li>No followed users.</li>
+ {% endfor %}
+</ul>
+
+<h1>Followers List</h1>
+<ul>
+ {% for user in followers %}
+ <div class="d-flex justify-content-between">
+  <li>{{ user.username }}</li>
+  {% comment %} <a href="{% url 'block_user' user_id=user.id %}"><button
+    class="btn btn-outline-danger btn-sm px-5">block</button></a> {% endcomment %}
+ </div>
+ {% empty %}
+ <li>No followers.</li>
+ {% endfor %}
+</ul>
+
+{% endblock content %}
