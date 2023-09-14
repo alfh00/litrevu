@@ -1,20 +1,33 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
-{% block head %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
-{% endblock head %}
+
 {% block content %}
 <p>{{ message }}</p>
-<form method="post">
 
-  {% csrf_token %}
-  <label for="{{ form.username.id_for_label }}">Email:</label>
-  {{ form.username }} {# Display the username (or email) input field #}
-  {{ form.password.label_tag }} {# Display the label for the password field #}
-  {{ form.password }} {# Display the password input field #}
-  <button type="submit">Se connecter</button>
+<div class="container">
+  <div class="row d-flex flex-column-reverse flex-md-row justify-content-center h-100 my-auto justify-content-around">
+    <div class="col-md-5 align-self-center">
+      <a href="{% url 'signup' %}"><button class="btn btn-outline-primary w-100 w-md-50">Sinscrire ici</button></a>
+    </div>
 
-</form>
-<a href="{% url 'signup' %}">Sinscrire ici</a>
+    <div class="col-md-5 align-self-center">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ form.username|as_crispy_field }}
+        </div>
+        <br>
+        {{ form.password|as_crispy_field }}
+        <br>
+        <button class="btn btn-outline-success w-100 w-md-50" type="submit">Se
+          connecter</button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
 {% endblock content %}

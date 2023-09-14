@@ -30,6 +30,9 @@ class Ticket(models.Model):
     description = models.TextField(max_length=2048, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+       return f'Ticket Title: {self.title}, User: {self.user.username}, Time Created: {self.time_created}'
 
 class Review(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
@@ -40,3 +43,6 @@ class Review(models.Model):
     headline = models.CharField(max_length=128)
     body = models.TextField(max_length=8192, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Review for Ticket: {self.ticket.title}, User: {self.user.username}, Rating: {self.rating}, Time Created: {self.time_created}'

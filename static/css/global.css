@@ -1,0 +1,40 @@
+/* Make the body a flex container */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Make the main content area flexible and grow to fill available space */
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.ratings {
+  margin-right: 10px;
+}
+
+.ratings i {
+  color: #cecece;
+  font-size: 15px;
+}
+
+.rating-color {
+  color: #fbc634 !important;
+}
+
+.review-count {
+  font-weight: 100;
+  margin-bottom: 2px;
+  font-size: 1rem;
+}
+
+.small-ratings i {
+  color: #cecece;
+}
+
+.review-stat {
+  font-weight: 300;
+  font-size: 18px;
+  margin-bottom: 2px;
+}

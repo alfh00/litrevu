@@ -1,10 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic import View
 from django.conf import settings
-
-
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 
 from . import forms
 
@@ -12,7 +10,7 @@ from . import forms
 
 class LoginPageView(View):
     template_name = 'authentication/login.html'
-    form_class = AuthenticationForm
+    form_class = forms.CrispyAuthenticationForm
 
     
     def get(self, request):
@@ -27,8 +25,11 @@ class LoginPageView(View):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            messages.success(request, 'Re-bienvenue! Nous sommes ravis de vous revoi')
             return redirect('home')
-        message = 'Identifiants invalides.'
+        message = ''
+        messages.error(request, 'Identifiants invalides.', extra_tags='danger')
+        # Adding a success message with the Bootstrap alert-success class
         return render(request, self.template_name, context={'form': form, 'message': message})
 
 class SignupPageView(View):
@@ -45,6 +46,7 @@ class SignupPageView(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
+            messages.success(request, 'Félicitation, création de compte réussie')
             return redirect(settings.LOGIN_REDIRECT_URL)
         message = ''
         return render(request, self.template_name, context={'form': form, 'message': message}) 
@@ -52,4 +54,5 @@ class SignupPageView(View):
 
 def logout_user(request):
     logout(request)
+    messages.success(request, 'A bientôt')
     return redirect('login')

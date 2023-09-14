@@ -4,17 +4,42 @@ from django.views.generic import View, CreateView, DeleteView
 from .forms import PhotoForm, TicketForm, ReviewForm, Review
 from django.urls import reverse_lazy, reverse
 from .models import Ticket
-from itertools import chain
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Avg
+from authentication.models import User
+from django.contrib import messages
+
+from django.http import JsonResponse
 
 # Create your views here.
-@login_required
-def feed(request):
-    return render(request, 'feed/home.html')
+
+
 
 @login_required
 def create_new_ticket(request):
+  ticket_form = TicketForm()
+  photo_form = PhotoForm()
+  if request.method == 'POST':
+    ticket_form = TicketForm(request.POST)
+    photo_form = PhotoForm(request.POST, request.FILES)
+    review_form = ReviewForm(request.POST)
+    if any([ticket_form.is_valid(),photo_form.is_valid()]):
+       photo = photo_form.save(commit=False)
+       photo.uploader = request.user
+       photo.save()
+       ticket = ticket_form.save(commit=False)
+       ticket.image = photo
+       ticket.user = request.user
+       ticket.save()
+       return redirect(reverse('home'))
+  forms = [ticket_form, photo_form]
+  context = {
+    'forms': forms,
+  }
+  return render(request, 'feed/new_ticket.html', context=context)
+
+@login_required
+def create_new_ticket_review(request):
   ticket_form = TicketForm()
   photo_form = PhotoForm()
   review_form = ReviewForm()
@@ -90,26 +115,25 @@ def add_review(request, ticket_id):
 
 @login_required
 def feed(request):
-    tickets = Ticket.objects.filter(
-        user__in=request.user.follows.all()
-    )
-    reviews = Review.objects.filter(
-        user__in=request.user.follows.all()
-    )
-    tickets_and_reviews = sorted(
-        chain(tickets, reviews),
-        key=lambda instance: instance.time_created,
-        reverse=True
-    )
+    current_user = request.user
 
-    paginator = Paginator(tickets_and_reviews, 6)
+    following_users = current_user.follows.all()
+
+    tickets = Ticket.objects.filter(user__in=following_users).order_by('-time_created').prefetch_related('review_set').exclude(user=request.user)
+
+    for ticket in tickets:
+        ticket.avg_rating = round(ticket.review_set.aggregate(avg_rating=Avg('rating'))['avg_rating'])
+        ticket.review_count = ticket.review_set.count()
+        # print()
+        # print(ticket.avg_rating)
+        # print(ticket.review_count)
+
+    paginator = Paginator(tickets, per_page=6)
     page = request.GET.get('page')
     page_obj = paginator.get_page(page)
-
     context = {
         'page_obj': page_obj
     }
-
     return render(
         request,
         'feed/home.html',
@@ -127,11 +151,73 @@ def discover(request):
    paginator = Paginator(tickets, 6)
    page = request.GET.get('page')
    page_obj = paginator.get_page(page)
-   
-   print(page_obj.__dict__)
 
+
+   
    context = {
       'page_obj': page_obj,
    }
 
    return render(request, 'feed/discover.html', context)
+
+@login_required
+def following_followers_lists(request):
+    # Get the currently logged-in user
+    current_user = request.user
+
+    # Retrieve the users that the current user is following
+    following_users = current_user.follows.all()
+
+    # Retrieve the users who are following the current user
+    followers = User.objects.filter(follows=current_user)
+
+    context = {
+        'following_users': following_users,
+        'followers': followers,
+    }
+
+    return render(request, 'feed/following_followers_lists.html', context)
+
+@login_required
+def follow_user(request, user_id):
+    user_to_follow = get_object_or_404(User, id=user_id)
+
+    # Check if the user is not already following the user_to_follow
+    if not request.user.follows.filter(id=user_id).exists():
+        request.user.follows.add(user_to_follow)
+
+    return redirect('following_followers_lists')
+
+
+@login_required
+def unfollow_user(request, user_id):
+    user_to_unfollow = get_object_or_404(User, id=user_id)
+
+    # Check if the user is following the user_to_unfollow
+    if request.user.follows.filter(id=user_id).exists():
+        request.user.follows.remove(user_to_unfollow)
+
+    return redirect('following_followers_lists')
+
+# from django.http import JsonResponse
+# from django.db.models import Avg, Count
+# from .models import Review
+
+# def reviews_data(request):
+#     # Get all reviews
+#     reviews = Review.objects.all()
+
+#     # Calculate average rating
+#     average_rating = reviews.aggregate(avg_rating=Avg('rating'))
+
+#     # Calculate review count
+#     review_count = reviews.count()
+
+#     # Create a dictionary to hold the data
+#     data = {
+#         'reviews': list(reviews.values()),  # Convert reviews queryset to a list of dictionaries
+#         'average_rating': average_rating['avg_rating'],  # Get the average rating value
+#         'review_count': review_count,  # Get the review count
+#     }
+
+#     return JsonResponse(data)

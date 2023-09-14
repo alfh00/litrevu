@@ -3,16 +3,20 @@
 <html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}" />
   {% block head %}{% endblock head %}
   <title>LITREVU</title>
 </head>
 
 <body>
   {% if user.is_authenticated %}
-  <nav class="navbar navbar-expand-sm bg-light">
+  <nav class="navbar navbar-expand-md bg-light">
     <div class="container-fluid">
+      <img class="ms-3 me-2" src="{% static 'img/logo_dark.png' %}" alt="" style="width: 35px">
       <a class="navbar-brand" href="{% url 'home' %}">Litrevu</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
         aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,10 +26,10 @@
         <ul class="navbar-nav me-auto">
 
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'new_ticket' %}"><i class="fa-solid fa-plus"></i> Ticket</a>
+            <a class="nav-link" href="{% url 'new_ticket' %}"><i class="fa-solid fa-plus"></i>+Ticket</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'new_ticket' %}">+ Critique</a>
+            <a class="nav-link" href="{% url 'new_ticket_review' %}">+ Critique</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'all_tickets' %}">Mes Tickets</a>
@@ -33,33 +37,75 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'discover' %}">Découverte</a>
           </li>
-          <li class="nav-item">
+        </ul>
 
-          </li>
 
-          <li class="d-felx nav-item dropdown w-auto">
+        <div class="d-flex align-items-center">
+          <img class="rounded-100 img-thumbnail  me-3" style="width: 35px"
+            src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png" alt="profile_pic">
+          <div class="d-flex dropdown ms-auto me-5">
 
-            <a class="nav-link dropdown-toggle ms-auto" data-bs-toggle="dropdown" href="#" role="button"
-              aria-haspopup="true" aria-expanded="false">{{user.email}}</a>
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+              aria-expanded="false">{{user.email}}</a>
             <div class="dropdown-menu">
+
+              <a class="dropdown-item" href="{% url 'following_followers_lists' %}">
+                mes amis</a>
+              <a>
+                <hr class="dropdown-divider">
+              </a>
               <a class="dropdown-item" href="{% url 'logout' %}">Se
-                Déconnecter</a>
+                Déconnexion</a>
 
 
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
+
 
       </div>
     </div>
   </nav>
 
 
+  {% endif %}
 
+  {% if messages %}
+  <div class="z-3 position-absolute bottom-0 end-0 ">
+    {% for message in messages  %}
+    <div class="alert alert-dismissible alert-{{ message.tags }} mx-3 ">
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      {% comment %} <h4 class="alert-heading">{{ message.tags }}</h4> {% endcomment %}
+      <p class="mb-0">{{message}}</p>
+    </div>
+    {% endfor %}
+  </div>
 
+  {% endif %}
 
-  {% endif %} {% block content %}{% endblock content %}
-  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+  <div class="flex-grow-1">
+    <!-- Page content here (content that varies between pages) -->
+    {% block content %}{% endblock content %}
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-top py-2 bg-dark">
+    <div class="container">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-md-4 d-flex align-items-center">
+          <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+            <img src="{% static 'img/logo_light.png' %}" alt="" style="width: 35px">
+          </a>
+          <span class="mb-3 mb-md-0 text-muted">© 2023 Litrevu, Inc</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous">
+  </script>
+
 </body>
 
 </html>

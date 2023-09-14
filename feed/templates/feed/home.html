@@ -1,17 +1,133 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Feed/Home</h1>
+
+<div class="row">
+
+  <div class="d-flex flex-column justify-content-center ">
+    <h1 class="mx-5 d-none">Home Ticket List</h1>
+    <div class="row my-4  justify-content-center">
+      <a class="col-5" href="{%url 'new_ticket'%}"><button class="btn btn-primary" style=" width:100%">Créer une
+          ticket</button></a>
+      <a class="col-5" href="{%url 'new_ticket_review'%}"><button class="btn btn-primary" style=" width:100%">Créer une
+          critique</button></a>
+    </div>
+    <ul class="list-unstyled">
+      {% for ticket in page_obj %}
+      <div class="container card mb-3">
+        <div class="card-body">
+          <div class="container">
+            <p>
+              <img class="rounded-100" style="width: 35px"
+                src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png"
+                alt="profile_pic">
+              <span class="ms-2">
+                {{ticket.user.username}}
+              </span>
+            </p>
+
+            <div class="row ">
+              <img class="col-3 mx-3 img-thumbnail" src="{{ ticket.image.file.url }}" alt="{{ ticket.image.caption }}"
+                style="width:160" />
+              <div class="col">
+
+                <h4 class="card-title mb-1">{{ticket.title|title}}</h4>
+                <span>
+
+                  <div class="ratings d-flex justify-content-start align-items-center ">
+                    <div class="ratings">
+                      {% for _ in "12345"  %}
+                      {% if forloop.counter0 < ticket.avg_rating %}
+                      <i class="fa fa-star rating-color"></i>
+                      {% else %}
+
+                      <i class="fa fa-star"></i>
+                      {% endif %}
+                      {% endfor %}
+                    </div>
+                    <span class="review-count">({{ticket.avg_rating}})</span>
+                    <span class="review-count ms-2">- {{ticket.review_count}} commentaire(s)</span>
+                  </div>
+
+                </span>
+                <p class="col card-text align-self-center mt-3">
+
+                  {{ticket.description|truncatechars:250}}</p>
+              </div>
+            </div>
+            <div>
+              <ul class="list-unstyled">
+                {% for review in ticket.review_set.all %}
+                <li>
+                  <div class="card border-primary mb-3 mt-3">
+                    <div class=" card-header">
+                      <img class="rounded-100" style="width: 35px"
+                        src="https://static-00.iconduck.com/assets.00/profile-circle-icon-2048x2048-cqe5466q.png"
+                        alt="profile_pic">
 
 
+                      <span>{{ review.user.username }}</span>
+                      <div class="ratings">
+                        {% for _ in "12345"  %}
+                        {% if forloop.counter0 < review.rating %}
+                        <i class="fa fa-star rating-color"></i>
+                        {% else %}
 
-{% for ticket in page_obj%}
-<div>
- <p>{{ticket.user}}</p>
+                        <i class="fa fa-star"></i>
+                        {% endif %}
+                        {% endfor %}
+                      </div>
+                      <span>({{ review.rating }})</span>
+                      <span class="align-self-end">{{ review.time_created|timesince }}</span>
+
+                    </div>
+                    <div class="card-body">
+                      <h4 class="card-title">{{ review.headline }}</h4>
+
+                      <p class="card-text">{{ review.body }}</p>
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+
+              </ul>
+            </div>
+            <div class="d-flex justify-content-end mt-5">
+              <a class="btn btn-outline-info w-50 w-md-25 "
+                href="{% url 'edit_ticket' ticket_id=ticket.id %}">Commenter</a>
+            </div>
+          </div>
+
+          <div class="card-footer text-muted border-top">
+            {{ ticket.time_created|timesince }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+
+      <div class="btn-group me-2" role="group" aria-label="Second group">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">
+          <i class="fa-regular fa-backward"></i></a> <a href="?page={{ page_obj.previous_page_number }}">previous
+        </a>
+        {% endif %}
+        <button type="button" class="btn btn-secondary">5</button>
+        <button type="button" class="btn btn-secondary">5</button>
+        <span class="current-page">{{ page_obj.number }}</span>
+        <button type="button" class="btn btn-secondary">6</button>
+        <button type="button" class="btn btn-secondary">7</button>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa-regular fa-forward"></i></a>
+        {% endif %}
+      </div>
+
+
+  </div>
+
+
 </div>
-<h2>{{ticket.title}}</h2>
-<img src="{{ ticket.image.file }}" alt="{{ ticket.image.caption }}" />
-<p>{{ ticket.description }}</p>
 
-{% endfor %}
+
 
 {% endblock content %}
