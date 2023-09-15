@@ -22,7 +22,7 @@ def create_new_ticket(request):
   if request.method == 'POST':
     ticket_form = TicketForm(request.POST)
     photo_form = PhotoForm(request.POST, request.FILES)
-    review_form = ReviewForm(request.POST)
+    # review_form = ReviewForm(request.POST)
     if any([ticket_form.is_valid(),photo_form.is_valid()]):
        photo = photo_form.save(commit=False)
        photo.uploader = request.user
@@ -75,6 +75,10 @@ def get_all_tickets(request):
 @login_required
 def get_single_ticket(request, ticket_id):
    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+   ticket.avg_rating = round(ticket.review_set.aggregate(avg_rating=Avg('rating'))['avg_rating']) or 0
+   ticket.review_count = ticket.review_set.count() 
+  
    return render(request, 'feed/ticket_detail.html', {'ticket':ticket})
 
 @login_required
@@ -110,13 +114,80 @@ def delete_ticket(request, ticket_id):
         extra_context={'ticket_id': ticket_id},  # Pass ticket_id to the template
     )(request, pk=ticket_id)
 
+  
+
 def add_review(request, ticket_id):
-   pass
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    ticket.avg_rating = round(ticket.review_set.aggregate(avg_rating=Avg('rating'))['avg_rating'])
+    ticket.review_count = ticket.review_set.count()
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.ticket = ticket
+            review.user = request.user
+            review.save()
+            messages.success(request, 'Critique créé avec succes.')
+            return redirect('ticket_detail', ticket_id=ticket_id)  # Redirect to the ticket detail page
+    else:
+        form = ReviewForm()
+
+    context = {
+        'ticket': ticket,
+        'form': form,
+    }
+
+    return render(request, 'feed/add_review.html', context)
+
+def edit_or_delete_review(request, ticket_id):
+    # Get the ticket object
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    # Find the user's review of this ticket
+    user_review = Review.objects.filter(ticket=ticket, user=request.user).first()
+
+    if not user_review:
+        # User doesn't have a review for this ticket, redirect to the ticket detail page
+        return redirect('ticket_detail', ticket_id=ticket_id)
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=user_review)
+        if 'edit' in request.POST:  # Handle the "Edit" action
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Critique modifiée avec succes.')
+                return redirect('home') 
+        elif 'delete' in request.POST:  
+            return render(request, 'feed/confirm_delete_review.html', {'user_review': user_review})
+    else:
+        form = ReviewForm(instance=user_review)
+
+    context = {
+        'ticket': ticket,
+        'user_review': user_review,
+        'form': form,
+    }
+
+    return render(request, 'feed/edit_or_delete_review.html', context)
+
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    
+    if review.user == request.user:
+        
+        review.delete()
+        messages.success(request, 'Critique supprimée avec succès.')
+    else:
+        
+        messages.error(request, 'Vous ne pouvez pas supprimer cette critique car vous n\'en êtes pas le propriétaire.')
+
+    return redirect('home')
+
 
 @login_required
 def feed(request):
     current_user = request.user
-
     following_users = current_user.follows.all()
 
     tickets = Ticket.objects.filter(user__in=following_users).order_by('-time_created').prefetch_related('review_set').exclude(user=request.user)
@@ -124,6 +195,10 @@ def feed(request):
     for ticket in tickets:
         ticket.avg_rating = round(ticket.review_set.aggregate(avg_rating=Avg('rating'))['avg_rating'])
         ticket.review_count = ticket.review_set.count()
+        ticket.already_reviewed = False
+        for review in ticket.review_set.all():
+           if review.user == request.user:
+              ticket.already_reviewed = True
         # print()
         # print(ticket.avg_rating)
         # print(ticket.review_count)

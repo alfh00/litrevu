@@ -36,25 +36,23 @@
             {{ticket.description|truncatechars:250}}</p>
         </div>
       </div>
-      {% if ticket.user == user %}
 
-      <div class="d-flex justify-content-end gap-3 mt-5 ">
-
-        <a class="btn btn-outline-info px-5" href="{% url 'edit_ticket' ticket_id=ticket.id %}"
-          class="btn btn-primary">Edit</a>
-        <a class="btn btn-outline-danger" href="{% url 'delete_ticket' ticket_id=ticket.id %}">delete</a>
-
-        <a class="btn btn-primary" href="{% url 'all_tickets' %}" class="btn btn-secondary">Back to All Tickets</a>
-
-        {% else %}
-        <a class="btn btn-primary my-3 ms-auto" href="{% url 'discover' %}" class="btn btn-secondary">go to
-          Discover</a>
-        <a class="btn btn-primary my-3 ms-auto" href="{% url 'home' %}" class="btn btn-secondary">go to
-          Home</a>
-        {% endif %}
-      </div>
 
     </div>
+  </div>
+  <div>
+    <form method="post">
+      {% csrf_token %}
+
+      {{ form|crispy}}
+
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-outline-success " name="edit" type="submit">Sauvegarder Critique</button>
+        <button class="btn btn-outline-danger " name="delete" type="submit">Supprimer Critique</button>
+
+      </div>
+
+    </form>
   </div>
 </div>
 

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+<p>Etes vous sur de vouloir supprimer cette critique?</p>
+
+<a href="{% url 'delete_review' review_id=user_review.id %}" class="btn btn-secondary">Confirmer</a>
+<a href="{% url 'all_tickets' %}" class="btn btn-secondary">Annuler</a>
+
+
+{% endblock %}

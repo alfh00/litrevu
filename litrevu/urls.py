@@ -41,6 +41,9 @@ urlpatterns = [
     path('following_followers_lists/', feed.views.following_followers_lists, name='following_followers_lists'),
     path('follow/<int:user_id>/', feed.views.follow_user, name='follow_user'),
     path('unfollow/<int:user_id>/', feed.views.unfollow_user, name='unfollow_user'),
+    path('tickets/<int:ticket_id>/add_review/', feed.views.add_review, name='add_review'),
+    path('tickets/<int:ticket_id>/edit_or_delete_review/', feed.views.edit_or_delete_review, name='edit_or_delete_review'),
+    path('tickets/<int:review_id>/delete_review/', feed.views.delete_review, name='delete_review'),
     # path('urlrate/', feed.views.reviews_data),
 ]
 
