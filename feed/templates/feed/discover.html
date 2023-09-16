@@ -13,6 +13,7 @@
    <span class="ms-2">
     {{ticket.user.username}}
    </span>
+   <a class="btn btn-outline-success" href="{% url 'follow_user' ticket.user.id %}">suivre</a>
   </p>
   <h4 class="card-title mb-5">{{ticket.title}}</h4>
 

@@ -203,7 +203,7 @@ def feed(request):
         # print(ticket.avg_rating)
         # print(ticket.review_count)
 
-    paginator = Paginator(tickets, per_page=6)
+    paginator = Paginator(tickets, per_page=1)
     page = request.GET.get('page')
     page_obj = paginator.get_page(page)
     context = {
@@ -237,6 +237,13 @@ def discover(request):
 
 @login_required
 def following_followers_lists(request):
+    query = request.GET.get('q', '')  # Get the search query from the URL parameter 'q'
+    users = []
+
+    if query:
+        users = User.objects.filter(username__icontains=query)
+
+
     # Get the currently logged-in user
     current_user = request.user
 
@@ -249,6 +256,8 @@ def following_followers_lists(request):
     context = {
         'following_users': following_users,
         'followers': followers,
+        'query': query,
+        'users': users,
     }
 
     return render(request, 'feed/following_followers_lists.html', context)

@@ -1,29 +1,70 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block content %}
-<h1>Following List</h1>
 
-<ul>
- {% for user in following_users %}
- <div class="d-flex justify-content-between">
-  <li>{{ user.username }}</li>
-  <a href="{% url 'unfollow_user' user_id=user.id %}"><button class="btn btn-info btn-sm">unfollow</button></a>
- </div>
- {% empty %}
- <li>No followed users.</li>
- {% endfor %}
-</ul>
+<div class="container my-3">
 
-<h1>Followers List</h1>
-<ul>
- {% for user in followers %}
- <div class="d-flex justify-content-between">
-  <li>{{ user.username }}</li>
-  {% comment %} <a href="{% url 'block_user' user_id=user.id %}"><button
-    class="btn btn-outline-danger btn-sm px-5">block</button></a> {% endcomment %}
- </div>
- {% empty %}
- <li>No followers.</li>
- {% endfor %}
-</ul>
+  <h2>Recherche LitRevueur</h2>
+  {% csrf_token %}
+
+  <form class="d-flex bg-light p-3 rounded-3" method="get" action="{% url 'following_followers_lists' %}">
+    <input type="text" class="form-control" name="q" placeholder="Search users" value="{{ query }}">
+    <button class="btn btn-primary" type="submit">Rechercher</button>
+  </form>
+
+  <div class="container bg-light rounded-3 p-5 my-3">
+
+    {% if query %}
+    <h4>Résultat(s) de recherche pour "{{ query }}"</h4>
+
+    {% endif %}
+    {% if users %}
+    <ul class="list-unstyled mx-5">
+      {% for user in users %}
+
+      <div class="d-flex justify-content-between my-1">
+        <li>{{ user.username }}</li>
+        <a class="btn btn-outline-success btn-sm w-25" href="{% url 'follow_user' user_id=user.id %}">S'abonner</a>
+      </div>
+
+      {% endfor %}
+    </ul>
+  </div>
+  {% else %}
+  {% if query %}
+  <p>No users found.</p>
+  {% endif %}
+  {% endif %}
+  <div class="container">
+
+    <h4>Tes abonnements:</h4>
+    <ul class="list-unstyled mx-5">
+      {% for user in following_users %}
+      <div class="d-flex justify-content-between my-1">
+        <li>{{ user.username }}</li>
+        <a class="btn btn-outline-danger btn-info btn-sm w-25" href="{% url 'unfollow_user' user_id=user.id %}">Se
+          désabonner</a>
+      </div>
+      {% empty %}
+      <li>Aucun abonnements</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="container">
+
+    <h4>Tes abonnés:</h4>
+    <ul class="list-unstyled mx-5">
+      {% for user in followers %}
+      <div class="d-flex justify-content-between">
+        <li>{{ user.username }}</li>
+        {% comment %} <a href="{% url 'block_user' user_id=user.id %}"><button
+            class="btn btn-outline-danger btn-sm px-5">block</button></a> {% endcomment %}
+      </div>
+      {% empty %}
+      <li>Aucun abonnés</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
 {% endblock content %}
