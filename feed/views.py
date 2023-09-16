@@ -114,9 +114,9 @@ def edit_ticket(request, ticket_id):
 
 
 def delete_ticket(request, ticket_id):
+    #
     return DeleteView.as_view(
         model=Ticket,
-        # Redirect to a success URL after deletion
         success_url=reverse_lazy("all_tickets"),
         template_name="feed/confirm_delete_ticket.html",  # Template for confirmation page
         context_object_name="ticket",  # Name to use for the ticket object in the template
@@ -250,7 +250,7 @@ def following_followers_lists(request):
     users = []
 
     if query:
-        users = User.objects.filter(username__icontains=query)
+        users = User.objects.filter(username__icontains=query).exclude(id=request.user.id)
 
     # Get the currently logged-in user
     current_user = request.user
@@ -274,6 +274,11 @@ def following_followers_lists(request):
 @login_required
 def follow_user(request, user_id):
     user_to_follow = get_object_or_404(User, id=user_id)
+
+    # Check if the user is trying to follow themselves
+    if request.user == user_to_follow:
+        messages.warning(request, "Oups! Il parait que t'essaye de t'abonner à toi même.")
+        return redirect("following_followers_lists")
 
     # Check if the user is not already following the user_to_follow
     if not request.user.follows.filter(id=user_id).exists():
