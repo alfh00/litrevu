@@ -116,10 +116,12 @@ def edit_ticket(request, ticket_id):
 def delete_ticket(request, ticket_id):
     return DeleteView.as_view(
         model=Ticket,
-        success_url=reverse_lazy("all_tickets"),  # Redirect to a success URL after deletion
+        # Redirect to a success URL after deletion
+        success_url=reverse_lazy("all_tickets"),
         template_name="feed/confirm_delete_ticket.html",  # Template for confirmation page
         context_object_name="ticket",  # Name to use for the ticket object in the template
-        extra_context={"ticket_id": ticket_id},  # Pass ticket_id to the template
+        # Pass ticket_id to the template
+        extra_context={"ticket_id": ticket_id},
     )(request, pk=ticket_id)
 
 
@@ -136,7 +138,8 @@ def add_review(request, ticket_id):
             review.user = request.user
             review.save()
             messages.success(request, "Critique créé avec succes.")
-            return redirect("ticket_detail", ticket_id=ticket_id)  # Redirect to the ticket detail page
+            # Redirect to the ticket detail page
+            return redirect("ticket_detail", ticket_id=ticket_id)
     else:
         form = ReviewForm()
 
@@ -242,7 +245,8 @@ def discover(request):
 
 @login_required
 def following_followers_lists(request):
-    query = request.GET.get("q", "")  # Get the search query from the URL parameter 'q'
+    # Get the search query from the URL parameter 'q'
+    query = request.GET.get("q", "")
     users = []
 
     if query:

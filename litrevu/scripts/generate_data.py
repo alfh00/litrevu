@@ -83,8 +83,5 @@ def generate_fake_data(num_photos=10, num_tickets=10, num_reviews_per_ticket=3):
 
 
 if __name__ == "__main__":
-    from django.contrib.auth.models import User  # Import User model
-
-    # Call the function to generate fake User, Photo, Ticket, Review objects, and relationships
     generate_fake_users()
     generate_fake_data()

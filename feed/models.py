@@ -45,4 +45,5 @@ class Review(models.Model):
     time_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Review for Ticket: {self.ticket.title}, User: {self.user.username}, Rating: {self.rating}, Time Created: {self.time_created}"
+        return f"Review for Ticket: {self.ticket.title}, User: {self.user.username},\
+              Rating: {self.rating}, Time Created: {self.time_created}"

@@ -2,7 +2,7 @@ import random
 
 from django.core.management.base import BaseCommand
 from faker import Faker
-from PIL import Image
+# from PIL import Image
 
 from authentication.models import User
 from feed.models import Photo, Review, Ticket
@@ -26,12 +26,12 @@ class Command(BaseCommand):
         # Generate and save fake User objects
         for i in range(num_users):
             username = fake.user_name()
-            email = fake.email()
+            email = f"email{i}@email.fr"
             profile_photo = fake.image_url()
 
             user = User(
                 username=username,
-                email=f"email{i}@email.fr",
+                email=email,
                 profile_photo=profile_photo,
             )
             user.set_password("S3cret!!!")  # Set a default password for users

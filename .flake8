@@ -1,0 +1,8 @@
+[flake8]
+extend-ignore = F401
+max-line-length = 119
+exclude =
+    migrations
+    __pycache__
+    pyproject.toml
+    env
