@@ -1,9 +1,11 @@
 import os
+
 import django
 from faker import Faker
 from PIL import Image
-from authentication.models import User  
-from feed.models import Photo, Ticket, Review 
+
+from authentication.models import User
+from feed.models import Photo, Review, Ticket
 
 # Configure Django's settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "litrevu.settings")
@@ -11,6 +13,7 @@ django.setup()
 
 # Create a Faker instance
 fake = Faker()
+
 
 # Generate and save fake User objects
 def generate_fake_users(num_users=10):
@@ -25,6 +28,7 @@ def generate_fake_users(num_users=10):
         )
         user.set_password("S3cret!!!")  # Set a default password for users
         user.save()
+
 
 # Generate and save fake Photo, Ticket, Review objects, and UserFollows relationships
 def generate_fake_data(num_photos=10, num_tickets=10, num_reviews_per_ticket=3):
@@ -73,9 +77,10 @@ def generate_fake_data(num_photos=10, num_tickets=10, num_reviews_per_ticket=3):
             review.save()
 
         # Create UserFollows relationships
-        user_follows = fake.random_elements(users, unique=True, length=fake.random_int(min=1, max=len(users)-1))
+        user_follows = fake.random_elements(users, unique=True, length=fake.random_int(min=1, max=len(users) - 1))
         for followed_user in user_follows:
             user.follows.add(followed_user)
+
 
 if __name__ == "__main__":
     from django.contrib.auth.models import User  # Import User model

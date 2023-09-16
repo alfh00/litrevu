@@ -1,14 +1,17 @@
+import random
+
 from django.core.management.base import BaseCommand
 from faker import Faker
 from PIL import Image
+
 from authentication.models import User
-from feed.models import Photo, Ticket, Review
-import random
+from feed.models import Photo, Review, Ticket
 
 fake = Faker()
 
+
 class Command(BaseCommand):
-    help = 'Generate fake data for your app'
+    help = "Generate fake data for your app"
 
     def handle(self, *args, **options):
         num_users = 10  # Adjust these values as needed
@@ -28,7 +31,7 @@ class Command(BaseCommand):
 
             user = User(
                 username=username,
-                email=f'email{i}@email.fr',
+                email=f"email{i}@email.fr",
                 profile_photo=profile_photo,
             )
             user.set_password("S3cret!!!")  # Set a default password for users
@@ -36,12 +39,12 @@ class Command(BaseCommand):
 
         # Generate and save fake Photo, Ticket, Review objects, and UserFollows relationships
         for _ in range(num_photos):
-            files = ['1.jpg','2.jpg','3.jpg']
+            files = ["1.jpg", "2.jpg", "3.jpg"]
             caption = fake.sentence(nb_words=6)
             uploader = fake.random_element(users)  # Get a random user as the uploader
 
             photo = Photo(
-                file= random.choice(files),
+                file=random.choice(files),
                 caption=caption,
                 uploader=uploader,
             )
@@ -58,7 +61,6 @@ class Command(BaseCommand):
                 description=description,
                 user=user,
                 image=photo,
-                
             )
             ticket.save()
 
@@ -91,4 +93,4 @@ class Command(BaseCommand):
                 # Create UserFollows relationship
                 user.follows.add(followed_user)
 
-        self.stdout.write(self.style.SUCCESS('Successfully generated fake data.'))
+        self.stdout.write(self.style.SUCCESS("Successfully generated fake data."))
