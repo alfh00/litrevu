@@ -23,7 +23,7 @@ Lancez ensuite la console, placez vous dans le dossier de votre choix puis clone
 git clone https://github.com/alfh00/litrevu.git
 ```
 
-Placez vous dans le dossier OC_P9_LitReviews, puis créez un nouvel environnement virtuel:
+Placez vous dans le dossier parent, puis créez un nouvel environnement virtuel:
 
 ```
 python -m venv env
